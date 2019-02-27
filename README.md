@@ -1,2 +1,2 @@
-# cs686_blockchain_P1_Go
-project1
+# cs686_blockchain_P2_Go
+project2
