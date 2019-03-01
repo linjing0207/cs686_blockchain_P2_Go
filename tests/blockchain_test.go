@@ -93,18 +93,30 @@ func Test(t *testing.T){
 	fmt.Println(b1.EncodeToJson())
 	fmt.Println(b1Json)
 
-	bb1,_ := p2.DecodeFromJson(b1Json)
+	bb1, err := p2.DecodeFromJson(b1Json)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
 	fmt.Println(bb1.EncodeToJson())
 
 	fmt.Println("b2 json:")
 	fmt.Println(b2.EncodeToJson())
 	fmt.Println(b2Json)
-	bb2,_ := p2.DecodeFromJson(b2Json)
+	bb2, err := p2.DecodeFromJson(b2Json)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
 	fmt.Println(bb2.EncodeToJson())
 
 	fmt.Println("bc json:")
 	fmt.Println(bc.EncodeToJson())
 	fmt.Println(bcJson)
-	bbc, _ := p2.DecodeJsonToBlockChain(bcJson)
+	bbc, err := p2.DecodeJsonToBlockChain(bcJson)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
 	fmt.Println(bbc.EncodeToJson())
 }
