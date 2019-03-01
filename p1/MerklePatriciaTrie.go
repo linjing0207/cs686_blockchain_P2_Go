@@ -46,7 +46,7 @@ Example:
 //type Trie struct {
 //	db map[string]string
 //}
-var Map map[string]string
+var Map = make(map[string]string)
 
 
 /**
@@ -1095,23 +1095,28 @@ func (mpt *MerklePatriciaTrie) MptToByteArray() []byte {
 	//1.
 	//l := unsafe.Sizeof(mpt)
 	//pb := (*[1024]byte)(unsafe.Pointer(&mpt))
-	//return (*pb)[:l]
+	//byteArray := (*pb)[:l]
+
 
 	//2.
-	return []byte(fmt.Sprintf("%v", mpt))
+	byteArray := []byte(fmt.Sprintf("%v", mpt))
+	return byteArray
 }
 
-func (mpt *MerklePatriciaTrie) Traverse(hash string, previous []uint8) map[string]string {
-	var node_hash string
+/**
+Description:
+This function traverse the mpt and return a map of key and values
+Arguments: hash(string), previous（[]uint8）
+Return: map[string]string
+ */
+func (mpt *MerklePatriciaTrie) GetMptMap(hash string, previous []uint8) map[string]string {
+
 	node := mpt.db[hash]
 	switch node.node_type {
-	case 0: //null
-		node_hash = ""
 	case 1: //branch
 		for i, v := range node.branch_value {
 			if v != "" {
-				node_hash = v
-				mpt.Traverse(node_hash, append(previous, uint8(i)))
+				mpt.GetMptMap(v, append(previous, uint8(i)))
 			}
 		}
 	case 2: //leaf or ext
@@ -1123,27 +1128,15 @@ func (mpt *MerklePatriciaTrie) Traverse(hash string, previous []uint8) map[strin
 
 			key := Hex_arrayToString(hex_array)
 			value := node.flag_value.value
-			StoreKeyandValue(key, value)
+			//store key and value
+			Map[key] = value
 		} else { // Ext
-			mpt.Traverse(node.flag_value.value, append(previous, compact_decode(node.flag_value.encoded_prefix)...))
+			mpt.GetMptMap(node.flag_value.value, append(previous, compact_decode(node.flag_value.encoded_prefix)...))
 		}
 	}
 	return  Map
 }
 
-func StoreKeyandValue(key string, value string) {
 
-	Map[key] = value
-}
-
-func (mpt *MerklePatriciaTrie) GetMpt(hash string, previous []uint8) map[string]string {
-	Map = make(map[string]string)
-	Map = mpt.Traverse(hash, previous)
-	return Map
-}
-
-func getMap() map[string]string {
-	return Map
-}
 
 
