@@ -1095,7 +1095,6 @@ func (mpt *MerklePatriciaTrie) MptToByteArray() []byte {
 	//pb := (*[1024]byte)(unsafe.Pointer(&mpt))
 	//byteArray := (*pb)[:l]
 
-
 	//2.
 	byteArray := []byte(fmt.Sprintf("%v", mpt))
 	return byteArray

@@ -55,10 +55,10 @@ type BlockJson struct {
 Create a new block
 Return type: Block
 */
-func NewBlock(height int32, timestamp int64, parentHash string, value p1.MerklePatriciaTrie) Block {
+func NewBlock(height int32, timeStamp int64, parentHash string, value p1.MerklePatriciaTrie) Block {
 	//create a block structure, value is null
 	block := Block{}
-	block.Initial(height, timestamp, parentHash, value)
+	block.Initial(height, timeStamp, parentHash, value)
 	return block
 }
 
@@ -72,8 +72,9 @@ Argument: height, timeStamp, hash, parentHash, value(mpt type)
 func (b *Block) Initial(height int32, timeStamp int64, parentHash string, value p1.MerklePatriciaTrie) {
 	//The size is the length of the byte array of the block value
 	size := len(value.MptToByteArray())
-	hash := b.hash_block()
-	b.Header = Header{height, timeStamp, hash, parentHash, int32(size)}
+	b.Header = Header{height, timeStamp, "", parentHash, int32(size)}
+	//!!!create a header without hash first, then set hash(call hashBlock method)
+	b.Header.Hash = b.hashBlock()
 	b.Value = value
 }
 
@@ -185,9 +186,9 @@ Block’s hash is the SHA3-256 encoded value of this string(note that you have t
 hash_str := string(b.Header.Height) + string(b.Header.Timestamp) + b.Header.ParentHash + b.Value.Root + string(b.Header.Size)
 Return: string
  */
-func (b *Block) hash_block() string {
-	hash_str := string(b.Header.Height) + string(b.Header.Timestamp) + b.Header.ParentHash + b.Value.GetRoot() + string(b.Header.Size)
-	sum := sha3.Sum256([]byte(hash_str))
+func (b *Block) hashBlock() string {
+	hashStr := string(b.Header.Height) + string(b.Header.Timestamp) + b.Header.ParentHash + b.Value.GetRoot() + string(b.Header.Size)
+	sum := sha3.Sum256([]byte(hashStr))
 	return hex.EncodeToString(sum[:])
 }
 

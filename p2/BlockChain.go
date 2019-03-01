@@ -59,13 +59,19 @@ func (bc *BlockChain) Insert(block Block) {
 	if blockList == nil {
 		blockList = append(blockList, block)
 	} else {
-		for _, v := range blockList {
+		count := 0
+		for i, v := range blockList {
 			//same hash
-			if block.Header.Hash != v.Header.Hash {
-				//insert into blockList
-				blockList = append(blockList, block)
+			if block.Header.Hash == v.Header.Hash {
+				break
 			}
+			count = i
 		}
+		//if go through the whole blockList, and it doesn't have same hash, insert block into blockList
+		if count == len(blockList)-1 {
+			blockList = append(blockList, block)
+		}
+
 	}
 	//update in map
 	bc.Chain[height] = blockList
