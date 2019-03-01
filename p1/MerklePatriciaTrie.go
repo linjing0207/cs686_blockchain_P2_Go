@@ -43,10 +43,8 @@ store key and value
 Example:
 "a" -> "apple"
  */
-//type Trie struct {
-//	db map[string]string
-//}
-var Map = make(map[string]string)
+
+var mptMap = make(map[string]string)
 
 
 /**
@@ -1109,14 +1107,14 @@ This function traverse the mpt and return a map of key and values
 Arguments: hash(string), previous（[]uint8）
 Return: map[string]string
  */
-func (mpt *MerklePatriciaTrie) GetMptMap(hash string, previous []uint8) map[string]string {
+func (mpt *MerklePatriciaTrie) tranverseMpt(hash string, previous []uint8) map[string]string {
 
 	node := mpt.db[hash]
 	switch node.node_type {
 	case 1: //branch
 		for i, v := range node.branch_value {
 			if v != "" {
-				mpt.GetMptMap(v, append(previous, uint8(i)))
+				mpt.tranverseMpt(v, append(previous, uint8(i)))
 			}
 		}
 	case 2: //leaf or ext
@@ -1129,12 +1127,24 @@ func (mpt *MerklePatriciaTrie) GetMptMap(hash string, previous []uint8) map[stri
 			key := Hex_arrayToString(hex_array)
 			value := node.flag_value.value
 			//store key and value
-			Map[key] = value
+			mptMap[key] = value
 		} else { // Ext
-			mpt.GetMptMap(node.flag_value.value, append(previous, compact_decode(node.flag_value.encoded_prefix)...))
+			mpt.tranverseMpt(node.flag_value.value, append(previous, compact_decode(node.flag_value.encoded_prefix)...))
 		}
 	}
-	return  Map
+	return  mptMap
+}
+
+/**
+Description:
+This function initialize the mptMap and call tranverseMpt method to get all the key and value pairs.
+Arguments: hash(string), previous（[]uint8）
+Return: map[string]string
+ */
+func (mpt *MerklePatriciaTrie) GetMptMap(hash string, previous []uint8) map[string]string {
+	mptMap = make(map[string]string)
+	mpt.tranverseMpt(hash, previous)
+	return mptMap
 }
 
 

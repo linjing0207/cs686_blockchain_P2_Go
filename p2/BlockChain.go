@@ -87,6 +87,7 @@ func (bc *BlockChain) EncodeToJson() (string, error) {
 	//k: height,
 	for _,blocklist := range bc.Chain{
 		for _,block := range blocklist {
+			//fmt.Println("root:", block.Value.GetRoot())
 			jsonStruct := block.blockToBlockJson()
 			jsonArray = append(jsonArray, jsonStruct)
 		}
@@ -119,6 +120,7 @@ func DecodeJsonToBlockChain(jsonString string) (BlockChain, error) {
 	for _,blockJson := range jsonArray {
 		block := blockJsonToBlock(blockJson)
 		//insert block
+		//fmt.Println("block:", block)
 		bc.Insert(block)
 	}
 
